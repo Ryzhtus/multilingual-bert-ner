@@ -13,8 +13,8 @@ class WikiAnnDataset(Dataset):
         # self.ner_tags = ['<PAD>'] + list(set(tag for tag_list in self.sentences_tags for tag in tag_list))
         #self.tag2idx = {tag: idx for idx, tag in enumerate(self.ner_tags)}
         #self.idx2tag = {idx: tag for idx, tag in enumerate(self.ner_tags)}
-        self.idx2tag = {0: 'B-LOC', 1: 'B-PER', 2: 'I-PER', 3: 'I-LOC', 4: 'B-ORG', 5: 'I-ORG', 6: 'O', 7: '<PAD>'}
-        self.tag2idx = {'B-LOC': 0, 'B-PER': 1, 'I-PER': 2, 'I-LOC': 3, 'B-ORG': 4, 'I-ORG': 5, 'O': 6, '<PAD>': 7}
+        self.idx2tag = {0: 'O', 1: 'B-PER', 2: 'I-PER', 3: 'B-ORG', 4: 'I-ORG', 5: 'B-LOC', 6: 'I-LOC', 7: '<PAD>'}
+        self.tag2idx = {'O': 0, 'B-PER': 1, 'I-PER': 2, 'B-ORG': 3, 'I-ORG': 4, 'B-LOC': 5, 'I-LOC': 6, 7: '<PAD>'}
 
     def __len__(self):
         return len(self.sentences)
