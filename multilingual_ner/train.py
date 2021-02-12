@@ -115,7 +115,6 @@ def valid_epoch(model, criterion, data, tag2idx, idx2tag, device):
 
             predictions = predictions.cpu().numpy()
             labels = labels.cpu().numpy()
-            masks = masks.cpu().numpy()
 
             # clear <PAD>, CLS and SEP tags from both labels and predictions
             clear_labels, clear_predictions = clear_tags(labels, predictions, idx2tag, batch_element_length)
@@ -157,7 +156,6 @@ def test_epoch(model, criterion, data, tag2idx, idx2tag, device):
 
             predictions = predictions.cpu().numpy()
             labels = labels.cpu().numpy()
-            masks = masks.cpu().numpy()
 
             # clear <PAD>, CLS and SEP tags from both labels and predictions
             clear_labels, clear_predictions = clear_tags(labels, predictions, idx2tag, batch_element_length)
