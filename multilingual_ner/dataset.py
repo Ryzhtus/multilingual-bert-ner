@@ -13,8 +13,8 @@ class WikiAnnDataset(Dataset):
         # self.ner_tags = ['<PAD>'] + list(set(tag for tag_list in self.sentences_tags for tag in tag_list))
         #self.tag2idx = {tag: idx for idx, tag in enumerate(self.ner_tags)}
         #self.idx2tag = {idx: tag for idx, tag in enumerate(self.ner_tags)}
-        self.idx2tag = {0: '<PAD>', 1: 'B-LOC', 2: 'B-PER', 3: 'I-PER', 4: 'I-LOC', 5: 'B-ORG', 6: 'I-ORG', 7: 'O'}
-        self.tag2idx = {'<PAD>': 0, 'B-LOC': 1, 'B-PER': 2, 'I-PER': 3, 'I-LOC': 4, 'B-ORG': 5, 'I-ORG': 6, 'O': 7}
+        self.idx2tag = {0: 'B-LOC', 1: 'B-PER', 2: 'I-PER', 3: 'I-LOC', 4: 'B-ORG', 5: 'I-ORG', 6: 'O', 7: '<PAD>'}
+        self.tag2idx = {'B-LOC': 0, 'B-PER': 1, 'I-PER': 2, 'I-LOC': 3, 'B-ORG': 4, 'I-ORG': 5, 'O': 6, '<PAD>': 7}
 
     def __len__(self):
         return len(self.sentences)
@@ -39,7 +39,7 @@ class WikiAnnDataset(Dataset):
         tokens_ids = self.tokenizer.convert_tokens_to_ids(tokens)
 
         #tokenized_tags = ['O'] + tokenized_tags + ['O']
-        tokenized_tags = [7] + tokenized_tags + [7]
+        tokenized_tags = [self.tag2idx['O']] + tokenized_tags + [self.tag2idx['O']]
         # tags_ids = [self.tag2idx[tag] for tag in tokenized_tags]
 
         return torch.LongTensor(tokens_ids), torch.LongTensor(tokenized_tags)
@@ -47,8 +47,8 @@ class WikiAnnDataset(Dataset):
     def paddings(self, batch):
         tokens, tags = list(zip(*batch))
 
-        tokens = pad_sequence(tokens, batch_first=True)
-        tags = pad_sequence(tags, batch_first=True)
+        tokens = pad_sequence(tokens, batch_first=True, padding_value=self.tag2idx['<PAD>'])
+        tags = pad_sequence(tags, batch_first=True, padding_value=self.tag2idx['<PAD>'])
 
         return tokens, tags
 
