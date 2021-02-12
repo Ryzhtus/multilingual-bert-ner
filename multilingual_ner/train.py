@@ -4,7 +4,7 @@ from seqeval.metrics import performance_measure
 import torch
 import torch.nn as nn
 
-def clear_tags(labels, predictions, idx2tag, batch_element_length):
+def clear_tags(labels, predictions, idx2tag, tag2idx, batch_element_length):
     """ this function removes <PAD>, CLS and SEP tags at each sentence
         and convert both ids of tags and batch elements to SeqEval input format
         [[first sentence tags], [second sentence tags], ..., [last sentence tags]]"""
@@ -18,7 +18,7 @@ def clear_tags(labels, predictions, idx2tag, batch_element_length):
     sentence_length = 0
 
     for idx in range(len(labels)):
-        if labels[idx] != 0:
+        if labels[idx] != tag2idx['<PAD>']:
             sentence_labels.append(idx2tag[labels[idx]])
             sentence_predictions.append(idx2tag[predictions[idx]])
             sentence_length += 1
@@ -68,7 +68,7 @@ def train_epoch(model, criterion, optimizer, data, tag2idx, idx2tag, device, sch
         labels = labels.cpu().numpy()
 
         # clear <PAD>, CLS and SEP tags from both labels and predictions
-        clear_labels, clear_predictions = clear_tags(labels, predictions, idx2tag, batch_element_length)
+        clear_labels, clear_predictions = clear_tags(labels, predictions, idx2tag, tag2idx, batch_element_length)
 
         iteration_result = performance_measure(clear_labels, clear_predictions)
 
@@ -117,7 +117,7 @@ def valid_epoch(model, criterion, data, tag2idx, idx2tag, device):
             labels = labels.cpu().numpy()
 
             # clear <PAD>, CLS and SEP tags from both labels and predictions
-            clear_labels, clear_predictions = clear_tags(labels, predictions, idx2tag, batch_element_length)
+            clear_labels, clear_predictions = clear_tags(labels, predictions, idx2tag, tag2idx, batch_element_length)
 
             iteration_result = performance_measure(clear_labels, clear_predictions)
 
@@ -158,7 +158,7 @@ def test_epoch(model, criterion, data, tag2idx, idx2tag, device):
             labels = labels.cpu().numpy()
 
             # clear <PAD>, CLS and SEP tags from both labels and predictions
-            clear_labels, clear_predictions = clear_tags(labels, predictions, idx2tag, batch_element_length)
+            clear_labels, clear_predictions = clear_tags(labels, predictions, idx2tag, tag2idx, batch_element_length)
 
             iteration_result = performance_measure(clear_labels, clear_predictions)
 
