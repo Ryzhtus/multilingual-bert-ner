@@ -10,9 +10,11 @@ class WikiAnnDataset(Dataset):
 
         self.tokenizer = tokenizer
 
-        self.ner_tags = ['<PAD>'] + list(set(tag for tag_list in self.sentences_tags for tag in tag_list))
-        self.tag2idx = {tag: idx for idx, tag in enumerate(self.ner_tags)}
-        self.idx2tag = {idx: tag for idx, tag in enumerate(self.ner_tags)}
+        # self.ner_tags = ['<PAD>'] + list(set(tag for tag_list in self.sentences_tags for tag in tag_list))
+        #self.tag2idx = {tag: idx for idx, tag in enumerate(self.ner_tags)}
+        #self.idx2tag = {idx: tag for idx, tag in enumerate(self.ner_tags)}
+        self.idx2tag = {0: '<PAD>', 1: 'B-LOC', 2: 'B-PER', 3: 'I-PER', 4: 'I-LOC', 5: 'B-ORG', 6: 'I-ORG', 7: 'O'}
+        self.tag2idx = {'<PAD>': 0, 'B-LOC': 1, 'B-PER': 2, 'I-PER': 3, 'I-LOC': 4, 'B-ORG': 5, 'I-ORG': 6, 'O': 7}
 
     def __len__(self):
         return len(self.sentences)
@@ -62,18 +64,18 @@ def read_data(filename):
 
     return sentences, sentences_tags
 
-def get_sentences_and_tags(mode, data, idx2tag):
+def get_sentences_and_tags(mode, data):
     sentences, tags = [], []
     for element in data[mode]:
         sentences.append(element['tokens'])
-        tags.append([idx2tag[tag] for tag in element['ner_tags']])
+        tags.append(element['ner_tags'])
 
     return sentences, tags
 
 def create_dataset_and_dataloader(mode, lang, batch_size, tokenizer):
     lang_data = datasets.load_dataset("wikiann", lang)
-    wikiann_idx2tag = {0: 'B-LOC', 1: 'B-PER', 2: 'I-PER', 3: 'I-LOC', 4: 'B-ORG', 5: 'I-ORG', 6: 'O'}
-    sentences, tags = get_sentences_and_tags(mode, lang_data, wikiann_idx2tag)
+
+    sentences, tags = get_sentences_and_tags(mode, lang_data)
     dataset = WikiAnnDataset(sentences, tags, tokenizer)
 
     return dataset, DataLoader(dataset, batch_size, num_workers=4, collate_fn=dataset.paddings)
