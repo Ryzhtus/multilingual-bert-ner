@@ -39,9 +39,10 @@ class WikiAnnDataset(Dataset):
         tokens_ids = self.tokenizer.convert_tokens_to_ids(tokens)
 
         tokenized_tags = ['O'] + tokenized_tags + ['O']
-        tags_ids = [self.tag2idx[tag] for tag in tokenized_tags]
+        tokenized_tags = [7] + tokenized_tags + [7]
+        # tags_ids = [self.tag2idx[tag] for tag in tokenized_tags]
 
-        return torch.LongTensor(tokens_ids), torch.LongTensor(tags_ids)
+        return torch.LongTensor(tokens_ids), torch.LongTensor(tokenized_tags)
 
     def paddings(self, batch):
         tokens, tags = list(zip(*batch))
