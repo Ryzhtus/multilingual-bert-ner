@@ -38,7 +38,7 @@ class WikiAnnDataset(Dataset):
         tokens = ['[CLS]'] + tokens + ['[SEP]']
         tokens_ids = self.tokenizer.convert_tokens_to_ids(tokens)
 
-        tokenized_tags = ['O'] + tokenized_tags + ['O']
+        #tokenized_tags = ['O'] + tokenized_tags + ['O']
         tokenized_tags = [7] + tokenized_tags + [7]
         # tags_ids = [self.tag2idx[tag] for tag in tokenized_tags]
 
