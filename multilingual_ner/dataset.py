@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
-import datasets
+
 
 class WikiAnnDataset(Dataset):
     def __init__(self, sentences, tags, tokenizer):
@@ -10,11 +10,9 @@ class WikiAnnDataset(Dataset):
 
         self.tokenizer = tokenizer
 
-        # self.ner_tags = ['<PAD>'] + list(set(tag for tag_list in self.sentences_tags for tag in tag_list))
-        #self.tag2idx = {tag: idx for idx, tag in enumerate(self.ner_tags)}
-        #self.idx2tag = {idx: tag for idx, tag in enumerate(self.ner_tags)}
-        self.idx2tag = {0: 'O', 1: 'B-PER', 2: 'I-PER', 3: 'B-ORG', 4: 'I-ORG', 5: 'B-LOC', 6: 'I-LOC', 7: '<PAD>'}
-        self.tag2idx = {'O': 0, 'B-PER': 1, 'I-PER': 2, 'B-ORG': 3, 'I-ORG': 4, 'B-LOC': 5, 'I-LOC': 6, '<PAD>': 7}
+        self.ner_tags = ['<PAD>'] + list(set(tag for tag_list in self.sentences_tags for tag in tag_list))
+        self.tag2idx = {tag: idx for idx, tag in enumerate(self.ner_tags)}
+        self.idx2tag = {idx: tag for idx, tag in enumerate(self.ner_tags)}
 
     def __len__(self):
         return len(self.sentences)
@@ -38,11 +36,10 @@ class WikiAnnDataset(Dataset):
         tokens = ['[CLS]'] + tokens + ['[SEP]']
         tokens_ids = self.tokenizer.convert_tokens_to_ids(tokens)
 
-        #tokenized_tags = ['O'] + tokenized_tags + ['O']
-        tokenized_tags = [self.tag2idx['O']] + tokenized_tags + [self.tag2idx['O']]
-        # tags_ids = [self.tag2idx[tag] for tag in tokenized_tags]
+        tokenized_tags = ['O'] + tokenized_tags + ['O']
+        tags_ids = [self.tag2idx[tag] for tag in tokenized_tags]
 
-        return torch.LongTensor(tokens_ids), torch.LongTensor(tokenized_tags)
+        return torch.LongTensor(tokens_ids), torch.LongTensor(tags_ids)
 
     def paddings(self, batch):
         tokens, tags = list(zip(*batch))
@@ -58,25 +55,16 @@ def read_data(filename):
     sentences, sentences_tags = [], []
 
     for sentence in rows:
-        words = [line.split()[0] for line in sentence.splitlines()]
+        words = [line.split()[0][3:] for line in sentence.splitlines()]
         tags = [line.split()[-1] for line in sentence.splitlines()]
         sentences.append(words)
         sentences_tags.append(tags)
 
     return sentences, sentences_tags
 
-def get_sentences_and_tags(mode, data):
-    sentences, tags = [], []
-    for element in data[mode]:
-        sentences.append(element['tokens'])
-        tags.append(element['ner_tags'])
 
-    return sentences, tags
-
-def create_dataset_and_dataloader(mode, lang, batch_size, tokenizer):
-    lang_data = datasets.load_dataset("wikiann", lang)
-
-    sentences, tags = get_sentences_and_tags(mode, lang_data)
+def create_dataset_and_dataloader(filename, batch_size, tokenizer):
+    sentences, tags = read_data(filename)
     dataset = WikiAnnDataset(sentences, tags, tokenizer)
 
     return dataset, DataLoader(dataset, batch_size, num_workers=4, collate_fn=dataset.paddings)
