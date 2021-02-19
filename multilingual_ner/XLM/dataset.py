@@ -44,8 +44,8 @@ class WikiAnnDataset(Dataset):
     def paddings(self, batch):
         tokens, tags = list(zip(*batch))
 
-        tokens = pad_sequence(tokens, batch_first=True, padding_value=self.tag2idx['<PAD>'])
-        tags = pad_sequence(tags, batch_first=True, padding_value=self.tag2idx['<PAD>'])
+        tokens = pad_sequence(tokens, batch_first=True, padding_value=self.tag2idx['<pad>'])
+        tags = pad_sequence(tags, batch_first=True, padding_value=self.tag2idx['<pad>'])
 
         return tokens, tags
 
