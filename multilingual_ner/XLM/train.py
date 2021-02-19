@@ -105,7 +105,7 @@ def valid_epoch(model, criterion, data, tag2idx, idx2tag, device):
 
             predictions = model(tokens)
             predictions = predictions.view(-1, predictions.shape[-1])
-            tags_mask = tags != tag2idx['<PAD>']
+            tags_mask = tags != tag2idx['<pad>']
             tags_mask = tags_mask.view(-1)
             labels = torch.where(tags_mask, tags.view(-1), torch.tensor(criterion.ignore_index).type_as(tags))
 
