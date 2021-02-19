@@ -1,4 +1,4 @@
-from multilingual_ner.metrics import FMeasureStorage
+from multilingual_ner.mBERT.metrics import FMeasureStorage
 from seqeval.metrics import performance_measure
 
 import torch
@@ -18,7 +18,7 @@ def clear_tags(labels, predictions, idx2tag, tag2idx, batch_element_length):
     sentence_length = 0
 
     for idx in range(len(labels)):
-        if labels[idx] != tag2idx['<PAD>']:
+        if labels[idx] != tag2idx['<pad>']:
             sentence_labels.append(idx2tag[labels[idx]])
             sentence_predictions.append(idx2tag[predictions[idx]])
             sentence_length += 1
@@ -56,7 +56,7 @@ def train_epoch(model, criterion, optimizer, data, tag2idx, idx2tag, device, sch
         predictions = model(tokens)
         predictions = predictions.view(-1, predictions.shape[-1])
 
-        tags_mask = tags != tag2idx['<PAD>']
+        tags_mask = tags != tag2idx['<pad>']
         tags_mask = tags_mask.view(-1)
         labels = torch.where(tags_mask, tags.view(-1), torch.tensor(criterion.ignore_index).type_as(tags))
 
@@ -146,7 +146,7 @@ def test_epoch(model, criterion, data, tag2idx, idx2tag, device):
 
             predictions = model(tokens)
             predictions = predictions.view(-1, predictions.shape[-1])
-            tags_mask = tags != tag2idx['<PAD>']
+            tags_mask = tags != tag2idx['<pad>']
             tags_mask = tags_mask.view(-1)
             labels = torch.where(tags_mask, tags.view(-1), torch.tensor(criterion.ignore_index).type_as(tags))
 

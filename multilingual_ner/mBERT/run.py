@@ -1,6 +1,6 @@
-from multilingual_ner.dataset import WikiAnnDataset, create_dataset_and_dataloader
-from multilingual_ner.train import train_model, test_epoch
-from multilingual_ner.model import BertNER
+from multilingual_ner.mBERT.dataset import create_dataset_and_dataloader
+from multilingual_ner.mBERT.train import train_model
+from multilingual_ner.mBERT.model import BertNER
 
 from transformers import BertTokenizer
 
@@ -12,18 +12,18 @@ TOKENIZER = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_low
 DEVICE = 'cuda' if torch.cuda.is_available else 'cpu'
 EPOCHS = 4
 BATCH_SIZE = 16
-LANGUAGE = 'es'
 
-train_dataset, train_dataloader = create_dataset_and_dataloader('train', LANGUAGE, BATCH_SIZE, TOKENIZER)
-eval_dataset, eval_dataloader = create_dataset_and_dataloader('validation', LANGUAGE, BATCH_SIZE, TOKENIZER)
-test_dataset, test_dataloader = create_dataset_and_dataloader('test', LANGUAGE, BATCH_SIZE, TOKENIZER)
+
+train_dataset, train_dataloader = create_dataset_and_dataloader('train', BATCH_SIZE, TOKENIZER)
+eval_dataset, eval_dataloader = create_dataset_and_dataloader('validation', BATCH_SIZE, TOKENIZER)
+test_dataset, test_dataloader = create_dataset_and_dataloader('test', BATCH_SIZE, TOKENIZER)
 
 classes = len(train_dataset.ner_tags)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 SpanishBertModel = BertNER(classes, pretrained='bert-base-multilingual-cased').to(device)
-optimizer = optim.AdamW(SpanishBertModel.parameters(), lr=2e-6)
+optimizer = optim.AdamW(SpanishBertModel.parameters(), lr=2e-5)
 criterion = nn.CrossEntropyLoss(ignore_index=0).to(device)
 EPOCHS = 4
 
