@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torch.nn.utils.rnn import pad_sequence
+from collections import Counter
 
 
 class WikiAnnDataset(Dataset):
@@ -40,6 +41,26 @@ class WikiAnnDataset(Dataset):
         tags_ids = [self.tag2idx[tag] for tag in tokenized_tags]
 
         return torch.LongTensor(tokens_ids), torch.LongTensor(tags_ids)
+
+    def entities_statistics(self):
+        entity_types_counter = Counter()
+
+        for tags_idx in range(len(self.sentences_tags)):
+            entity = []
+
+            for idx in range(len(self.sentences_tags[tags_idx])):
+                if self.sentences_tags[tags_idx][idx] != 'O':
+                    entity.append(self.sentences_tags[tags_idx][idx])
+                else:
+                    entity_types_counter['O'] += 1
+
+            if entity:
+                for idx in range(len(entity)):
+                    if entity[idx][0] == 'B':
+                        entity_tag = entity[idx][2:]
+                        entity_types_counter[entity_tag] += 1
+
+        return entity_types_counter
 
     def paddings(self, batch):
         tokens, tags = list(zip(*batch))
