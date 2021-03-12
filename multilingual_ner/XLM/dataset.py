@@ -67,4 +67,4 @@ def create_dataset_and_dataloader(filename, batch_size, tokenizer):
     sentences, tags = read_data(filename)
     dataset = WikiAnnDataset(sentences, tags, tokenizer)
 
-    return dataset, DataLoader(dataset, batch_size, num_workers=4, collate_fn=dataset.paddings)
+    return dataset, DataLoader(dataset, batch_size, collate_fn=dataset.paddings)
