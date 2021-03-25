@@ -62,6 +62,15 @@ class WikiAnnDataset(Dataset):
 
         return entity_types_counter
 
+    def BIO_tags_statistics(self):
+        bio_types_counter = Counter
+
+        for tags_idx in range(len(self.sentences_tags)):
+            for idx in range(len(self.sentences_tags[tags_idx])):
+                bio_types_counter[self.sentences_tags[tags_idx][idx]] += 1
+
+        return bio_types_counter
+
     def paddings(self, batch):
         tokens, tags = list(zip(*batch))
 
