@@ -63,7 +63,7 @@ class WikiAnnDataset(Dataset):
         return entity_types_counter
 
     def BIO_tags_statistics(self):
-        bio_types_counter = Counter
+        bio_types_counter = Counter()
 
         for tags_idx in range(len(self.sentences_tags)):
             for idx in range(len(self.sentences_tags[tags_idx])):
