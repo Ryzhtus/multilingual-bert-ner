@@ -7,11 +7,12 @@ class BertNER(nn.Module):
         self.embedding_dim = 768
         self.num_classes = num_classes
 
-        self.bert = BertModel.from_pretrained(pretrained)
+        self.bert = BertModel.from_pretrained(pretrained, output_attentions=True)
         self.linear = nn.Linear(self.embedding_dim, self.num_classes)
 
     def forward(self, tokens):
-        embeddings = self.bert(tokens)[0]
-        predictions = self.linear(embeddings)
+        outputs = self.bert(tokens)
+        last_hidden_state = outputs['last_hidden_state']
+        predictions = self.linear(last_hidden_state)
 
-        return predictions
+        return predictions, outputs
